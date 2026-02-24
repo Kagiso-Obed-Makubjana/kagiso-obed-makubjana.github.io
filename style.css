@@ -1,44 +1,120 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #0f172a;
-    color: #e5e7eb;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top, #0b1220, #020617);
+  color: #e5e7eb;
+  scroll-behavior: smooth;
 }
 
-header {
-    background: #020617;
-    text-align: center;
-    padding: 40px;
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  border-bottom: 1px solid #1f2937;
 }
 
-nav {
-    background: #1e293b;
-    text-align: center;
-    padding: 15px;
+.hero h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 42px;
+  margin-bottom: 10px;
 }
 
-nav a {
-    color: #38bdf8;
-    margin: 0 15px;
-    text-decoration: none;
-    font-weight: bold;
+.tagline {
+  color: #38bdf8;
+  margin-bottom: 30px;
 }
 
-section {
-    padding: 40px;
-    max-width: 900px;
-    margin: auto;
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.project {
-    background: #1e293b;
-    padding: 20px;
-    margin: 15px 0;
-    border-radius: 8px;
+.btn {
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.btn.primary {
+  background: #38bdf8;
+  color: #020617;
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn.secondary {
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+
+.navbar {
+  text-align: center;
+  padding: 15px;
+  background: #020617;
+  position: sticky;
+  top: 0;
+}
+
+.navbar a {
+  color: #38bdf8;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.section {
+  max-width: 1000px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.skills-grid span {
+  background: #1e293b;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background: #111827;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #1f2937;
+  transition: 0.25s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  border-color: #38bdf8;
+}
+
+.project-card a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 footer {
-    text-align: center;
-    padding: 20px;
-    background: #020617;
+  text-align: center;
+  padding: 30px;
+  background: #020617;
+  border-top: 1px solid #1f2937;
 }
