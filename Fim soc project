@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Integrity Monitoring with Wazuh — SOC Lab</title>
+<style>
+  :root{
+    --bg: #0b0f0d;
+    --panel: #111714;
+    --line: #1f2b25;
+    --text: #c9d6cd;
+    --muted: #6f8479;
+    --accent: #5ee6a5;
+    --warn: #e6b35e;
+    --mono: "IBM Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+    --sans: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  .scanline{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+    animation: scan 6s linear infinite;
+    z-index: 100;
+    pointer-events: none;
+  }
+  @keyframes scan{
+    0%{ top: 0%; }
+    100%{ top: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .scanline{ animation: none; display:none; }
+  }
+
+  header{
+    border-bottom: 1px solid var(--line);
+    padding: 28px 6vw;
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .brand{
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .brand .dim{ color: var(--muted); }
+  nav a{
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    text-decoration: none;
+    margin-left: 24px;
+    transition: color 0.2s;
+  }
+  nav a:hover{ color: var(--accent); }
+
+  .hero{
+    padding: 80px 6vw 60px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: 0.35; }
+  }
+  h1{
+    font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+    line-height: 1.08;
+  }
+  .hero p.lede{
+    margin-top: 24px;
+    max-width: 60ch;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  .terminal{
+    margin-top: 48px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 720px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  .terminal-bar{
+    display:flex;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .terminal-bar span{
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--line);
+  }
+  .terminal-body{
+    padding: 18px 20px;
+    color: var(--text);
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .terminal-body .ok{ color: var(--accent); }
+  .terminal-body .dim{ color: var(--muted); }
+  .terminal-body .warn{ color: var(--warn); }
+
+  section{
+    padding: 64px 6vw;
+    border-bottom: 1px solid var(--line);
+  }
+  section h2{
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+  section h2 .num{ color: var(--muted); margin-right: 12px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 24px;
+  }
+  .card h3{
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .card p{ color: var(--muted); font-size: 0.95rem; }
+  .card .tag{
+    display:inline-block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .arch{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 480px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  .arch-node{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 6px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .arch-node .label{ color: var(--text); font-weight: 600; }
+  .arch-node .role{ color: var(--muted); font-size: 0.75rem; }
+  .arch-arrow{
+    text-align: center;
+    color: var(--accent);
+    padding: 6px 0;
+    font-size: 0.9rem;
+  }
+
+  pre.code{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  pre.code .tag{ color: var(--accent); }
+  pre.code .attr{ color: var(--warn); }
+  pre.code .val{ color: #9fc6ff; }
+  pre.code .comment{ color: var(--muted); }
+
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table th, table td{
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  table th{
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  table td{ color: var(--text); font-size: 0.88rem; }
+  table td.cause{ color: var(--muted); }
+  table td.fix{ color: var(--accent); }
+
+  .steps{
+    list-style: none;
+    counter-reset: step;
+    max-width: 720px;
+  }
+  .steps li{
+    counter-increment: step;
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .steps li:last-child{ border-bottom: none; }
+  .steps li::before{
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .steps .step-body h4{
+    font-size: 1rem;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .steps .step-body p{ color: var(--muted); font-size: 0.9rem; margin-bottom: 8px; }
+  .steps .step-body code{
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .takeaways{
+    max-width: 720px;
+  }
+  .takeaways li{
+    list-style: none;
+    padding: 14px 0 14px 28px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    position: relative;
+    font-size: 0.95rem;
+  }
+  .takeaways li::before{
+    content: "▸";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+  }
+  .takeaways li:last-child{ border-bottom: none; }
+
+  footer{
+    padding: 40px 6vw;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a{ color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 640px){
+    header{ flex-direction: column; align-items: flex-start; }
+    nav a{ margin-left: 0; margin-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<header>
+  <div class="brand">KOM<span class="dim">@</span>soc-lab<span class="dim"> :: fim-monitor</span></div>
+  <nav>
+    <a href="https://kagiso-obed-makubjana.github.io/">Portfolio</a>
+    <a href="#config">Config</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="https://github.com/kagiso-obed-makubjana">GitHub</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Lab status — monitoring active</div>
+  <h1>Real-time File Integrity Monitoring with Wazuh</h1>
+  <p class="lede">
+    A SOC lab deploying Wazuh's FIM module to detect file creation, modification, and deletion
+    in real time — covering Docker deployment, syscheck configuration, and end-to-end
+    troubleshooting of the alerting pipeline from agent to dashboard.
+  </p>
+
+  <div class="terminal">
+    <div class="terminal-bar"><span></span><span></span><span></span></div>
+    <div class="terminal-body"><span class="dim"># trigger and trace a file event end-to-end</span>
+$ touch /root/testfile
+$ rm /root/testfile
+
+<span class="dim">agent.log</span>   <span class="ok">[OK] syscheck: real-time event queued</span>
+<span class="dim">alerts.json</span> <span class="ok">[OK] rule 550/553 fired — file added/deleted</span>
+<span class="dim">indexer</span>     <span class="ok">[OK] wazuh-alerts-* doc count +2</span>
+<span class="dim">dashboard</span>   <span class="ok">[OK] event visible — Integrity Monitoring</span></div>
+  </div>
+</section>
+
+<section id="evidence">
+  <h2><span class="num">00</span>Evidence — live detection</h2>
+  <p style="color: var(--muted); max-width: 60ch; margin-bottom: 24px;">
+    Wazuh dashboard, Integrity Monitoring module, showing real FIM alerts generated
+    when <code style="color: var(--accent)">/root/testfile1</code> was created, modified,
+    and deleted on the monitored agent.
+  </p>
+  <div style="border: 1px solid var(--line); border-radius: 6px; overflow: hidden;">
+    <img src="evidence-fim-events.png" alt="Wazuh dashboard showing FIM events for file creation, modification, and deletion of /root/testfile1, with rule IDs 550, 553, and 554" style="width: 100%; display: block;">
+  </div>
+  <div class="grid" style="margin-top: 24px;">
+    <div class="card">
+      <div class="tag">RULE 554</div>
+      <h3>File added</h3>
+      <p>Triggered when <code style="color: var(--accent)">/root/testfile1</code> was created — first detection in the chain.</p>
+    </div>
+    <div class="card">
+      <div class="tag">RULE 550</div>
+      <h3>Checksum changed</h3>
+      <p>Fired on modification — confirms content-level integrity checking is active, not just metadata.</p>
+    </div>
+    <div class="card">
+      <div class="tag">RULE 553</div>
+      <h3>File deleted</h3>
+      <p>Confirms deletion events are captured, completing the create → modify → delete lifecycle.</p>
+    </div>
+  </div>
+</section>
+
+<section id="overview">
+  <h2><span class="num">01</span>Overview</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="tag">DETECTION</div>
+      <h3>Why FIM matters</h3>
+      <p>Unauthorized changes to critical files are a common signal of malware, persistence
+      mechanisms, privilege escalation, or insider activity. FIM gives a SOC visibility into
+      exactly what changed, when, and how.</p>
+    </div>
+    <div class="card">
+      <div class="tag">SCOPE</div>
+      <h3>What this lab covers</h3>
+      <p>Single-node Wazuh deployment via Docker, syscheck configuration for real-time
+      monitoring of <code>/root</code>, and validation of the full alert pipeline from
+      agent to dashboard.</p>
+    </div>
+    <div class="card">
+      <div class="tag">STACK</div>
+      <h3>Components</h3>
+      <p>Wazuh Manager 4.14.5, Wazuh Indexer, Wazuh Dashboard — orchestrated with Docker
+      Compose on a single host.</p>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <h2><span class="num">02</span>Architecture</h2>
+  <div class="arch">
+    <div class="arch-node">
+      <span class="label">Monitored Agent</span>
+      <span class="role">syscheck / inotify</span>
+    </div>
+    <div class="arch-arrow">↓ events</div>
+    <div class="arch-node">
+      <span class="label">Wazuh Manager</span>
+      <span class="role">analysisd, wazuh-db</span>
+    </div>
+    <div class="arch-arrow">↓ alerts.json</div>
+    <div class="arch-node">
+      <span class="label">Wazuh Indexer</span>
+      <span class="role">wazuh-alerts-*</span>
+    </div>
+    <div class="arch-arrow">↓ query</div>
+    <div class="arch-node">
+      <span class="label">Wazuh Dashboard</span>
+      <span class="role">Integrity Monitoring module</span>
+    </div>
+  </div>
+</section>
+
+<section id="config">
+  <h2><span class="num">03</span>Configuration</h2>
+  <p style="color: var(--muted); max-width: 60ch; margin-bottom: 24px;">
+    FIM is enabled through the <code style="color: var(--accent)">&lt;syscheck&gt;</code> block
+    in the manager's shared agent configuration, which propagates to every connected agent.
+  </p>
+  <pre class="code"><span class="comment">/* /var/ossec/etc/shared/default/agent.conf */</span>
+&lt;<span class="tag">agent_config</span>&gt;
+  &lt;<span class="tag">syscheck</span>&gt;
+    &lt;<span class="tag">disabled</span>&gt;no&lt;/<span class="tag">disabled</span>&gt;
+    &lt;<span class="tag">frequency</span>&gt;43200&lt;/<span class="tag">frequency</span>&gt;
+    &lt;<span class="tag">directories</span> <span class="attr">check_all</span>=<span class="val">"yes"</span> <span class="attr">report_changes</span>=<span class="val">"yes"</span> <span class="attr">realtime</span>=<span class="val">"yes"</span>&gt;/root&lt;/<span class="tag">directories</span>&gt;
+  &lt;/<span class="tag">syscheck</span>&gt;
+&lt;/<span class="tag">agent_config</span>&gt;</pre>
+
+  <div class="grid" style="margin-top: 24px;">
+    <div class="card">
+      <h3>check_all="yes"</h3>
+      <p>Checks every file attribute — permissions, owner, group, size, and cryptographic hash.</p>
+    </div>
+    <div class="card">
+      <h3>report_changes="yes"</h3>
+      <p>Stores a diff of file content changes for forensic review.</p>
+    </div>
+    <div class="card">
+      <h3>realtime="yes"</h3>
+      <p>Uses inotify on Linux for instant detection instead of waiting on the scheduled scan.</p>
+    </div>
+  </div>
+</section>
+
+<section id="deployment">
+  <h2><span class="num">04</span>Deployment</h2>
+  <ol class="steps">
+    <li>
+      <div class="step-body">
+        <h4>Stand up the Wazuh stack</h4>
+        <p>Deploy the single-node Docker Compose configuration containing manager, indexer, and dashboard.</p>
+        <code>docker compose up -d</code>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <h4>Push the FIM configuration to the manager</h4>
+        <p>Copy the updated shared agent config into the manager container and restart.</p>
+        <code>docker cp agent.conf single-node-wazuh.manager-1:/var/ossec/etc/shared/default/agent.conf
+docker exec -it single-node-wazuh.manager-1 /var/ossec/bin/wazuh-control restart</code>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <h4>Restart the agent</h4>
+        <p>The agent pulls the new shared configuration on restart.</p>
+        <code>systemctl restart wazuh-agent</code>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <h4>Confirm the merged configuration</h4>
+        <p>Verify the monitored path appears in the agent's merged config.</p>
+        <code>cat /var/ossec/etc/shared/merged.mg | grep -A2 syscheck</code>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section id="troubleshooting">
+  <h2><span class="num">05</span>Troubleshooting log</h2>
+  <table>
+    <thead>
+      <tr><th>Issue</th><th>Root cause</th><th>Resolution</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>getaddrinfo ENOTFOUND wazuh.manager</td>
+        <td class="cause">Manager container not running</td>
+        <td class="fix">Started manager container via Docker Compose</td>
+      </tr>
+      <tr>
+        <td>wazuh-db → failed, daemons not ready</td>
+        <td class="cause">wazuh-db couldn't read ossec.conf</td>
+        <td class="fix">Restored manager's ossec.conf from config mount</td>
+      </tr>
+      <tr>
+        <td>Error reading XML file 'etc/ossec.conf'</td>
+        <td class="cause">Config file empty or corrupted</td>
+        <td class="fix">Restored default wazuh_manager.conf from upstream repo</td>
+      </tr>
+      <tr>
+        <td>3000 — error getting authorization token (run as)</td>
+        <td class="cause">Mismatched API credentials / run_as flag</td>
+        <td class="fix">Reconciled wazuh-wui password, restarted dashboard</td>
+      </tr>
+      <tr>
+        <td>No FIM events in dashboard</td>
+        <td class="cause">Agent hadn't pulled updated agent.conf</td>
+        <td class="fix">Restarted manager + agent, verified merged.mg</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="takeaways">
+  <h2><span class="num">06</span>Key takeaways</h2>
+  <ul class="takeaways">
+    <li>FIM is only as reliable as the full pipeline — manager, indexer, and dashboard all need to be healthy for alerts to surface.</li>
+    <li>Real-time monitoring depends on inotify, which should be tuned for production workloads.</li>
+    <li>Configuration changes propagate manager → agent via agent.conf, and agents must be restarted to apply them.</li>
+    <li>End-to-end validation — agent log → alerts.json → indexer → dashboard — is the fastest way to isolate a broken stage.</li>
+  </ul>
+</section>
+
+<footer>
+  <span>Kagiso Obed Makubjana — SOC / Detection Engineering Lab</span>
+  <a href="https://kagiso-obed-makubjana.github.io/">← back to portfolio</a>
+</footer>
+
+</body>
+</html>
