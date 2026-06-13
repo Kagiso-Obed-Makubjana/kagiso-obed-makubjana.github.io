@@ -1,138 +1,666 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kagiso Obed Makubjana | Cloud Security Portfolio</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <meta name="description" content="Kagiso Makubjana - IT Support Technician & Cloud Security Portfolio">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kagiso Makubjana | Cloud & Cybersecurity Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg-alt:#0d1320;
+    --panel:#121a2b;
+    --panel-border:#1e2a40;
+    --text:#cdd6e4;
+    --muted:#6b7a94;
+    --green:#00ff9d;
+    --cyan:#64ffda;
+    --red:#ff5d5d;
+    --amber:#ffb454;
+    --display: 'Space Grotesk', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--display);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+  }
+
+  /* ===== Background grid texture ===== */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(100,255,218,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(100,255,218,0.035) 1px, transparent 1px);
+    background-size:48px 48px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  a{color:var(--cyan); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ===== Top status bar ===== */
+  .statusbar{
+    background:#060a12;
+    border-bottom:1px solid var(--panel-border);
+    font-family:var(--mono);
+    font-size:0.72rem;
+    color:var(--muted);
+    padding:6px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    letter-spacing:0.05em;
+    position:relative; z-index:5;
+    flex-wrap:wrap; gap:8px;
+  }
+  .statusbar .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--green); margin-right:6px;
+    box-shadow:0 0 8px var(--green);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:0.35;}
+  }
+
+  /* ===== Header ===== */
+  header{
+    position:relative; z-index:2;
+    padding:64px 24px 40px;
+    text-align:center;
+    border-bottom:1px solid var(--panel-border);
+    overflow:hidden;
+  }
+  header .eyebrow{
+    font-family:var(--mono);
+    color:var(--green);
+    font-size:0.8rem;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  header h1{
+    font-size:clamp(2.4rem, 6vw, 4rem);
+    margin:0;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    background:linear-gradient(120deg,#ffffff 0%, var(--cyan) 60%, var(--green) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  header p.role{
+    font-family:var(--mono);
+    color:var(--muted);
+    margin:14px 0 0;
+    font-size:1rem;
+  }
+  header .badges{
+    margin-top:24px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+  }
+  .badge{
+    font-family:var(--mono);
+    font-size:0.72rem;
+    border:1px solid var(--panel-border);
+    background:var(--panel);
+    color:var(--cyan);
+    padding:6px 12px;
+    border-radius:999px;
+    letter-spacing:0.04em;
+  }
+
+  /* ===== Nav ===== */
+  nav{
+    position:sticky; top:0; z-index:10;
+    background:rgba(10,14,20,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--panel-border);
+    padding:14px 24px;
+    display:flex; justify-content:center; gap:28px; flex-wrap:wrap;
+  }
+  nav a{
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:0.82rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    position:relative;
+    padding:4px 0;
+    transition:color .2s;
+  }
+  nav a::before{
+    content:"// ";
+    color:var(--green);
+  }
+  nav a:hover{ color:var(--green); text-decoration:none; }
+
+  /* ===== Sections ===== */
+  section{
+    position:relative; z-index:2;
+    padding:64px 24px;
+    max-width:1080px;
+    margin:0 auto;
+  }
+  .section-head{
+    display:flex; align-items:baseline; gap:16px;
+    margin-bottom:32px;
+    border-bottom:1px solid var(--panel-border);
+    padding-bottom:16px;
+  }
+  .section-head .tag{
+    font-family:var(--mono);
+    color:var(--green);
+    font-size:0.85rem;
+    flex-shrink:0;
+  }
+  .section-head h2{
+    font-size:1.9rem;
+    margin:0;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  /* ===== About ===== */
+  #about p{ color:var(--text); max-width:760px; font-size:1.02rem; }
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;
+    margin-top:28px;
+  }
+  .skill-chip{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    padding:14px 16px;
+    font-family:var(--mono);
+    font-size:0.82rem;
+    color:var(--text);
+    transition:border-color .2s, transform .2s;
+  }
+  .skill-chip:hover{
+    border-color:var(--green);
+    transform:translateY(-2px);
+  }
+  .skill-chip .lvl{
+    display:block; margin-top:8px;
+    height:4px; width:100%; background:#1e2a40; border-radius:2px; overflow:hidden;
+  }
+  .skill-chip .lvl span{
+    display:block; height:100%; background:linear-gradient(90deg,var(--green),var(--cyan));
+  }
+
+  /* ===== Project cards ===== */
+  .project-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+  }
+  .project-card{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:24px;
+    position:relative;
+    overflow:hidden;
+    transition:transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .project-card:hover{
+    transform:translateY(-4px);
+    border-color:var(--green);
+    box-shadow:0 12px 30px -10px rgba(0,255,157,0.18);
+  }
+  .project-card::before{
+    content:attr(data-index);
+    position:absolute; top:14px; right:18px;
+    font-family:var(--mono); font-size:0.75rem; color:var(--muted);
+    letter-spacing:0.1em;
+  }
+  .project-card h3{
+    margin:0 0 10px;
+    font-size:1.15rem;
+    font-weight:600;
+    padding-right:50px;
+  }
+  .project-card p{
+    color:var(--muted);
+    font-size:0.92rem;
+    margin:0 0 14px;
+  }
+  .project-card .tags{
+    display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;
+  }
+  .project-card .tags span{
+    font-family:var(--mono);
+    font-size:0.68rem;
+    background:#0d1626;
+    border:1px solid var(--panel-border);
+    color:var(--cyan);
+    padding:3px 9px;
+    border-radius:5px;
+  }
+  .project-card .diagram-placeholder{
+    border:1px dashed var(--panel-border);
+    border-radius:8px;
+    padding:18px;
+    text-align:center;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:0.78rem;
+    margin-bottom:16px;
+    background:repeating-linear-gradient(45deg, rgba(100,255,218,0.02) 0 10px, transparent 10px 20px);
+  }
+  .card-links{
+    display:flex; gap:14px; flex-wrap:wrap;
+    font-family:var(--mono); font-size:0.82rem;
+  }
+  .card-links a{
+    display:inline-flex; align-items:center; gap:6px;
+    color:var(--green);
+    border-bottom:1px solid transparent;
+  }
+  .card-links a:hover{
+    border-bottom-color:var(--green);
+    text-decoration:none;
+  }
+  .status-pill{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:0.65rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:3px 10px;
+    border-radius:999px;
+    margin-bottom:12px;
+  }
+  .status-pill.live{ background:rgba(0,255,157,0.1); color:var(--green); border:1px solid rgba(0,255,157,0.35); }
+  .status-pill.progress{ background:rgba(255,180,84,0.1); color:var(--amber); border:1px solid rgba(255,180,84,0.35); }
+  .status-pill.planned{ background:rgba(107,122,148,0.1); color:var(--muted); border:1px solid var(--panel-border); }
+
+  /* ===== Certifications ===== */
+  .cert-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+  }
+  .cert-card{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:18px 20px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .cert-card .icon{
+    width:38px; height:38px; flex-shrink:0;
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,255,157,0.08);
+    border:1px solid rgba(0,255,157,0.3);
+    color:var(--green);
+    font-family:var(--mono); font-weight:700; font-size:0.9rem;
+  }
+  .cert-card .info strong{ display:block; font-size:0.95rem; }
+  .cert-card .info span{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
+
+  /* ===== Terminal / contact ===== */
+  .terminal{
+    background:#060a12;
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    overflow:hidden;
+    font-family:var(--mono);
+    font-size:0.85rem;
+  }
+  .terminal-bar{
+    background:#0d1320;
+    padding:10px 16px;
+    display:flex; align-items:center; gap:8px;
+    border-bottom:1px solid var(--panel-border);
+  }
+  .terminal-bar span{ width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .terminal-bar .r{ background:#ff5f56; }
+  .terminal-bar .y{ background:#ffbd2e; }
+  .terminal-bar .g{ background:#27c93f; }
+  .terminal-bar .title{ margin-left:10px; color:var(--muted); font-size:0.78rem; }
+  .terminal-body{ padding:22px; color:var(--text); }
+  .terminal-body .prompt{ color:var(--green); }
+  .terminal-body .out{ color:var(--text); margin:4px 0 16px; }
+  .terminal-body a{ color:var(--cyan); }
+  .cursor{
+    display:inline-block; width:8px; height:1.1em; background:var(--green);
+    animation:blink 1s steps(1) infinite; vertical-align:text-bottom;
+  }
+  @keyframes blink{ 50%{opacity:0;} }
+
+  /* ===== Footer ===== */
+  footer{
+    border-top:1px solid var(--panel-border);
+    padding:28px 24px;
+    text-align:center;
+    font-family:var(--mono);
+    font-size:0.75rem;
+    color:var(--muted);
+    position:relative; z-index:2;
+  }
+  footer .dot{
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:var(--green); margin-right:8px; box-shadow:0 0 6px var(--green);
+  }
+
+  /* ===== Back to top ===== */
+  .totop{
+    position:fixed; bottom:24px; right:24px;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--green); display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:1rem; cursor:pointer; z-index:20;
+    opacity:0; transform:translateY(12px); transition:opacity .3s, transform .3s, border-color .3s;
+    text-decoration:none;
+  }
+  .totop.show{ opacity:1; transform:translateY(0); }
+  .totop:hover{ border-color:var(--green); text-decoration:none; }
+
+  @media (max-width:600px){
+    header{ padding:48px 16px 32px; }
+    section{ padding:44px 16px; }
+    nav{ gap:14px; }
+    .project-card h3{ font-size:1.05rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- ================= HERO ================= -->
-  <header class="hero">
-    <div class="hero-content">
-      <h1>Kagiso Makubjana</h1>
-      <p class="tagline">IT Support Technician • Aspiring SOC Analyst • Cloud Security</p>
-      <p class="tagline certifications">CompTIA N+ • CompTIA S+ • ISC2 CC • Microsoft AZ900 • Microsoft SC900 • TryHackMe SOC Level 1 • AWS•AZURE•TERRAFORM </p>
-      <div class="hero-buttons">
-        <a href="#projects" class="btn primary">View Projects</a>
-        <a href="mailto:Deepercreatives@email.com?subject=CV Request" class="btn secondary">Request My CV</a>
-        <a href="#medium" class="btn secondary">My Medium</a>
-      </div>
-      <button id="theme-toggle" class="theme-btn">🌙</button>
+  <div class="statusbar">
+    <div><span class="dot"></span>SYSTEM STATUS: ONLINE</div>
+    <div id="clock">UTC --:--:--</div>
+    <div>LOCATION: SOUTH AFRICA, GP</div>
+  </div>
+
+  <header>
+    <div class="eyebrow">// Security Operations</div>
+    <h1>Kagiso Makubjana</h1>
+    <p class="role">Cloud Security Engineer (Azure & AWS) · SOC/Cyber SecurityAnalyst · Network Defender</p>
+    <div class="badges">
+      <span class="badge">5+ yrs IT & Security</span>
+      <span class="badge">Azure · AZ-900</span>
+      <span class="badge">Azure · SC-900</span>
+      <span class="badge">Network+</span>
+      <span class="badge">Security+</span>
+      <span class="badge">ISC2 CC</span>
+      <span class="badge">SIEM / IDS</span>
     </div>
   </header>
 
-  <!-- ================= NAVBAR ================= -->
-  <nav class="navbar">
+  <nav>
     <a href="#about">About</a>
-    <a href="#skills">Skills</a>
-    <a href="#projects">Projects</a>
-    <a href="#medium">Blog</a>
+    <a href="#cloud-projects">Cloud Security</a>
+    <a href="#projects">Cybersecurity</a>
+    <a href="#certifications">Certifications</a>
     <a href="#contact">Contact</a>
   </nav>
 
-  <!-- ================= ABOUT ================= -->
-  <section id="about" class="section">
-    <h2>About Me</h2>
+  <section id="about">
+    <div class="section-head">
+      <span class="tag">01</span>
+      <h2>About Me</h2>
+    </div>
     <p>
-      IT Support Technician with 5+ years of experience in Active Directory,
-      networking, and cybersecurity operations. Passionate about cloud security,
-      SIEM monitoring, and SOC analysis. Currently expanding skills in Terraform
-      and Microsoft Azure security.
+      IT Support Technician and aspiring SOC/Cyber Security Analyst with 5+ years of IT systems and cybersecurity experience.
+      Skilled in Palo Alto, PfSense, Cisco routing & switching, Active Directory, SIEM monitoring, IDS/IPS (Snort),
+      and cloud security fundamentals on Microsoft Azure. Passionate about cloud security architecture,
+      threat detection, and turning logs into actionable insight. always upskilling myself with new Technologies
     </p>
-  </section>
 
-  <!-- ================= SKILLS ================= -->
-  <section id="skills" class="section">
-    <h2>Core Skills</h2>
     <div class="skills-grid">
-      <div class="skill">
-        <p>Active Directory</p>
-        <div class="bar"><div class="progress" style="width:90%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Microsoft Entra ID</p>
-        <div class="bar"><div class="progress" style="width:85%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Azure Security</p>
-        <div class="bar"><div class="progress" style="width:80%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Splunk SIEM</p>
-        <div class="bar"><div class="progress" style="width:75%"></div></div>
-      </div>
-      <div class="skill">
-        <p>PFsense</p>
-        <div class="bar"><div class="progress" style="width:70%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Palo Alto</p>
-        <div class="bar"><div class="progress" style="width:75%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Terraform</p>
-        <div class="bar"><div class="progress" style="width:70%"></div></div>
-      </div>
-      <div class="skill">
-        <p>Incident Response</p>
-        <div class="bar"><div class="progress" style="width:80%"></div></div>
-      </div>
+      <div class="skill-chip">Azure Security & RBAC<span class="lvl"><span style="width:80%"></span></span></div>
+      <div class="skill-chip">Palo Alto Firewalls<span class="lvl"><span style="width:85%"></span></span></div>
+      <div class="skill-chip">PfSense / VPN<span class="lvl"><span style="width:80%"></span></span></div>
+      <div class="skill-chip">Cisco Routing & Switching<span class="lvl"><span style="width:85%"></span></span></div>
+      <div class="skill-chip">Active Directory & GPO<span class="lvl"><span style="width:90%"></span></span></div>
+      <div class="skill-chip">SIEM (Wazuh/Splunk/Sentinel)<span class="lvl"><span style="width:75%"></span></span></div>
+      <div class="skill-chip">IDS/IPS (Snort)<span class="lvl"><span style="width:75%"></span></span></div>
+      <div class="skill-chip">Incident Detection-Response-Threat Hunter<span class="lvl"><span style="width:78%"></span></span></div>
     </div>
   </section>
 
-  <!-- ================= PROJECTS ================= -->
-  <section id="projects" class="section">
-    <h2>Featured Projects</h2>
-    <div class="projects-grid">
+  <section id="cloud-projects">
+    <div class="section-head">
+      <span class="tag">02</span>
+      <h2>Azure Cloud Security Projects</h2>
+    </div>
 
-      <div class="project-card">
-        <h3>Azure RBAC with Terraform</h3>
-        <p>Implemented secure role-based access control using Infrastructure as Code.</p>
-        <a href="https://medium.com/@deepercreatives/lab-01-role-based-access-control-6db8862e0c8b" target="_blank">View Project →</a>
+    <div class="project-grid">
+
+      <div class="project-card" data-index="AZ-01">
+        <span class="status-pill progress">In Progress</span>
+        <h3>Azure Identity & Access Security</h3>
+        <p>Implemented role-based access control (RBAC), Conditional Access policies, and multi-factor authentication
+        across an Azure tenant to enforce least-privilege identity governance.</p>
+        <div class="tags"><span>Entra ID</span><span>RBAC</span><span>MFA</span><span>Conditional Access</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — IAM flow, RBAC roles & MFA enforcement (coming soon)</div>
+        <div class="card-links">
+          <a href="https://microsoftlearning.github.io/AZ500-AzureSecurityTechnologies/Instructions/Labs/LAB_01_RBAC.html" target="_blank">↗ Lab Reference</a>
+          <a href="https://github.com/yourusername/azure-iam-security" target="_blank">⌥ GitHub Repo</a>
+          <a href="azure-iam.html">→ Project Page</a>
+        </div>
       </div>
 
-      <div class="project-card">
-        <h3>Network Security Groups Lab</h3>
-        <p>Configured NSGs and ASGs to harden Azure network security posture.</p>
-        <a href="https://medium.com/@deepercreatives/lab-02-network-security-groups-and-application-security-groups-in-terraform-18a5d4f00014" target="_blank">View Project →</a>
+      <div class="project-card" data-index="AZ-02">
+        <span class="status-pill planned">Planned</span>
+        <h3>Azure Network Security</h3>
+        <p>Designing a segmented VNet architecture with NSGs, Azure Firewall, and WAF to control east-west and
+        north-south traffic flows.</p>
+        <div class="tags"><span>VNet</span><span>NSG</span><span>Azure Firewall</span><span>WAF</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — VNet segmentation & traffic flow (coming soon)</div>
+        <div class="card-links">
+          <a href="azure-network-security.html">→ Project Page</a>
+          <a href="https://github.com/yourusername/azure-network-security" target="_blank">⌥ GitHub Repo</a>
+        </div>
       </div>
 
-      <div class="project-card">
-        <h3>SOC Monitoring Practice</h3>
-        <p>Hands-on SIEM monitoring and incident analysis using Splunk and TryHackMe labs.</p>
-        <a href="#contact">Ask Me About It →</a>
+      <div class="project-card" data-index="AZ-03">
+        <span class="status-pill planned">Planned</span>
+        <h3>Azure Compute Security</h3>
+        <p>Hardening Azure VMs using Just-In-Time access, Azure Bastion, and Microsoft Defender for Cloud
+        recommendations.</p>
+        <div class="tags"><span>JIT Access</span><span>Bastion</span><span>Defender for Cloud</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — VM hardening & secure access path (coming soon)</div>
+        <div class="card-links">
+          <a href="azure-compute-security.html">→ Project Page</a>
+          <a href="https://github.com/yourusername/azure-compute-security" target="_blank">⌥ GitHub Repo</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="AZ-04">
+        <span class="status-pill planned">Planned</span>
+        <h3>Azure Storage & Data Protection</h3>
+        <p>Securing storage accounts with encryption at rest, private endpoints, and centralized secrets management
+        via Azure Key Vault.</p>
+        <div class="tags"><span>Key Vault</span><span>Encryption</span><span>Private Endpoints</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — storage encryption & Key Vault integration (coming soon)</div>
+        <div class="card-links">
+          <a href="azure-storage-security.html">→ Project Page</a>
+          <a href="https://github.com/yourusername/azure-storage-security" target="_blank">⌥ GitHub Repo</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="AZ-05">
+        <span class="status-pill planned">Planned</span>
+        <h3>Azure Monitoring & SIEM Integration</h3>
+        <p>Connecting Azure Log Analytics and Microsoft Sentinel to centralize telemetry, build detection rules, and
+        trigger automated incident response playbooks.</p>
+        <div class="tags"><span>Log Analytics</span><span>Sentinel</span><span>SOAR</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — logging pipeline & SIEM alert flow (coming soon)</div>
+        <div class="card-links">
+          <a href="azure-siem.html">→ Project Page</a>
+          <a href="https://github.com/yourusername/azure-siem" target="_blank">⌥ GitHub Repo</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="AZ-06">
+        <span class="status-pill planned">Planned</span>
+        <h3>Azure Governance & Compliance</h3>
+        <p>Applying Azure Policy and Blueprints to enforce organizational standards and improve Microsoft Secure
+        Score over time.</p>
+        <div class="tags"><span>Azure Policy</span><span>Blueprints</span><span>Secure Score</span></div>
+        <div class="diagram-placeholder">📐 Architecture diagram — governance & compliance controls (coming soon)</div>
+        <div class="card-links">
+          <a href="azure-governance.html">→ Project Page</a>
+          <a href="https://github.com/yourusername/azure-governance" target="_blank">⌥ GitHub Repo</a>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- ================= MEDIUM BLOG ================= -->
-  <section id="medium" class="section">
-    <h2>My Latest Work From My Medium</h2>
-    <p style="opacity:0.8;margin-bottom:25px;">Live feed from @deepercreatives</p>
-    <div class="medium-carousel-wrapper">
-      <div id="medium-feed" class="medium-carousel"></div>
-      <button id="prev" class="carousel-btn">◀</button>
-      <button id="next" class="carousel-btn">▶</button>
+  <section id="projects">
+    <div class="section-head">
+      <span class="tag">03</span>
+      <h2>Cybersecurity Projects</h2>
+    </div>
+
+    <div class="project-grid">
+
+      <div class="project-card" data-index="CS-01">
+        <span class="status-pill live">Completed</span>
+        <h3>Incident Handling with Splunk — TryHackMe</h3>
+        <p>Investigated a simulated security incident using Splunk SIEM by analyzing web server logs, IDS alerts, and
+        authentication events. Identified reconnaissance, brute-force attempts, exploitation indicators, and
+        post-compromise behavior.</p>
+        <div class="tags"><span>SPL Queries</span><span>Log Correlation</span><span>IOC ID</span><span>Cyber Kill Chain</span></div>
+        <div class="card-links">
+          <a href="https://medium.com/@deepercreatives/tryhackme-incident-handling-with-splunk-c4235d0b396a" target="_blank">↗ Read Write-up</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="CS-02">
+        <span class="status-pill live">Completed</span>
+        <h3>Snort IDS Deployment & Analysis — TryHackMe</h3>
+        <p>Configured Snort IDS, wrote custom detection rules, captured live attack traffic, and documented alerts
+        for threat detection and tuning.</p>
+        <div class="tags"><span>Snort</span><span>Custom Rules</span><span>Packet Capture</span></div>
+        <div class="card-links">
+          <a href="https://medium.com/@deepercreatives" target="_blank">↗ Read Write-up</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="CS-03">
+        <span class="status-pill live">Completed</span>
+        <h3>Cyber Kill Chain Walkthrough — TryHackMe</h3>
+        <p>Analyzed attacker behavior through all seven kill chain phases and correlated logs across multiple
+        security layers to map the full attack lifecycle.</p>
+        <div class="tags"><span>Threat Modeling</span><span>Log Analysis</span></div>
+        <div class="card-links">
+          <a href="https://medium.com/@deepercreatives" target="_blank">↗ Read Write-up</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="CS-04">
+        <span class="status-pill progress">Write-up Pending</span>
+        <h3>Active Directory Implementation — Construction Factory</h3>
+        <p>Designed and deployed AD infrastructure including OU structure, Group Policy Objects, secure
+        authentication policies, and workstation onboarding for a production environment.</p>
+        <div class="tags"><span>Active Directory</span><span>GPO</span><span>OU Design</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank">Full Case Study Coming Soon</a>
+        </div>
+      </div>
+
+      <div class="project-card" data-index="CS-05">
+        <span class="status-pill progress">Write-up Pending</span>
+        <h3>Palo Alto & PfSense Firewall Rulesets</h3>
+        <p>Configured NAT, site-to-site VPN, threat prevention profiles, and network segmentation to protect
+        production environments from external and lateral threats.</p>
+        <div class="tags"><span>NAT</span><span>VPN</span><span>Segmentation</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank">Full Documentation Coming Soon</a>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- ================= CONTACT ================= -->
-  <section id="contact" class="section">
-    <h2>Contact</h2>
-    <p>📧 Email: <a href="mailto:Deepercreatives@email.com">Deepercreatives@email.com</a></p>
-    <p>💼 LinkedIn: <a href="https://www.linkedin.com/in/kagiso-makubjana-52531a146/" target="_blank">View LinkedIn Profile</a></p>
-    <p class="contact-note">Recruiters: Please click request cv to receive my full CV.</p>
+  <section id="certifications">
+    <div class="section-head">
+      <span class="tag">04</span>
+      <h2>Certifications</h2>
+    </div>
+
+    <div class="cert-grid">
+      <div class="cert-card"><div class="icon">A+</div><div class="info"><strong>CompTIA A+</strong><span>Hardware & OS Fundamentals</span></div></div>
+      <div class="cert-card"><div class="icon">N+</div><div class="info"><strong>CompTIA Network+</strong><span>Networking Fundamentals</span></div></div>
+      <div class="cert-card"><div class="icon">S+</div><div class="info"><strong>CompTIA Security+</strong><span>Security Fundamentals</span></div></div>
+      <div class="cert-card"><div class="icon">CC</div><div class="info"><strong>ISC2 Certified in Cybersecurity</strong><span>Entry-Level Security</span></div></div>
+      <div class="cert-card"><div class="icon">Az</div><div class="info"><strong>Azure Fundamentals</strong><span>AZ-900</span></div></div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-head">
+      <span class="tag">05</span>
+      <h2>Contact</h2>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="r"></span><span class="y"></span><span class="g"></span>
+        <span class="title">kagiso@soc-portfolio: ~</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="prompt">$</span> whoami</div>
+        <div class="out">Kagiso Makubjana — Cloud Security & SOC Analyst</div>
+
+        <div><span class="prompt">$</span> cat contact.txt</div>
+        <div class="out">
+          email&nbsp;&nbsp;&nbsp;: <a href="mailto:your.email@example.com">your.email@example.com</a><br/>
+          linkedin: <a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a><br/>
+          github&nbsp;&nbsp;: <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
+        </div>
+
+        <div><span class="prompt">$</span> <span class="cursor"></span></div>
+      </div>
+    </div>
   </section>
 
   <footer>
-    <p>© 2026 Kagiso Makubjana • Cloud Security Portfolio</p>
+    <span class="dot"></span>End of transmission — Kagiso Makubjana © 2026 · Cloud & Cybersecurity Portfolio
   </footer>
 
-  <script src="script.js"></script>
+  <a href="#about" class="totop" id="totop" aria-label="Back to top">↑</a>
+
+  <script>
+    // Live UTC clock
+    function tick(){
+      const now = new Date();
+      const h = String(now.getUTCHours()).padStart(2,'0');
+      const m = String(now.getUTCMinutes()).padStart(2,'0');
+      const s = String(now.getUTCSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = `UTC ${h}:${m}:${s}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Back to top visibility
+    const totop = document.getElementById('totop');
+    window.addEventListener('scroll', () => {
+      totop.classList.toggle('show', window.scrollY > 400);
+    });
+  </script>
+
 </body>
 </html>
