@@ -618,30 +618,4 @@
     </div>
   </section>
 
-  <footer>
-    <span class="dot"></span>End of transmission — Kagiso Makubjana © 2026 · Cloud & Cybersecurity Portfolio
-  </footer>
-
-  <a href="#about" class="totop" id="totop" aria-label="Back to top">↑</a>
-
-  <script>
-    // Live UTC clock
-    function tick(){
-      const now = new Date();
-      const h = String(now.getUTCHours()).padStart(2,'0');
-      const m = String(now.getUTCMinutes()).padStart(2,'0');
-      const s = String(now.getUTCSeconds()).padStart(2,'0');
-      document.getElementById('clock').textContent = `UTC ${h}:${m}:${s}`;
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // Back to top visibility
-    const totop = document.getElementById('totop');
-    window.addEventListener('scroll', () => {
-      totop.classList.toggle('show', window.scrollY > 400);
-    });
-  </script>
-
-</body>
-</html>
+  <footer
